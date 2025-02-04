@@ -4,7 +4,7 @@ import { assets } from '../assets/assets';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const { user, setShowLogin } = useContext(AppContext);
+  const { user, setShowLogin, logout, credit } = useContext(AppContext);
   const navigate = useNavigate();
 
   return (
@@ -18,16 +18,15 @@ const Navbar = () => {
           <div className='flex items-center gap-4 sm:gap-6'>
             <button onClick={() => navigate('/buy')}  className='flex items-center gap-2 bg-blue-100 px-3 py-1 cursor-pointer rounded-full text-xs sm:text-sm font-medium hover:scale-105 transition-all'>
               <img className='w-4 sm:w-5' src={assets.credit_star} alt='' />
-              <span>Credit's left: 50</span>
+              <span>Credit's left: {credit}</span>
             </button>
-            <p className='text-sm sm:text-lg font-semibold'>Hi, GreatStack</p>
+            <p className='text-sm sm:text-lg font-semibold'>{user.name}</p>
             <div className='relative group'>
               <img src={assets.profile_icon} className='w-8 sm:w-10 rounded-full drop-shadow cursor-pointer' alt='' />
               <div className='absolute hidden group-hover:block top-12 right-0 z-10 bg-white border shadow-lg rounded-lg text-black py-2 w-24 sm:w-32'>
                 <ul>
-                  <li className='px-3 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer'>Profile</li>
-                  <li className='px-3 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer'>Settings</li>
-                  <li className='px-3 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer'>Logout</li>
+                 
+                  <li className='px-3 sm:px-4 py-2 hover:bg-gray-100 cursor-pointer' onClick={logout}>Logout</li>
                 </ul>
               </div>
             </div>
