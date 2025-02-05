@@ -3,10 +3,65 @@ import { plans } from '../assets/assets';
 import { assets } from '../assets/assets';
 import { AppContext } from '../context/AppContext';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const BuyCredit = () => {
+  const { user, backendUrl, loadCreditsData, token, setShowLogin } = useContext(AppContext);
+  const navigate = useNavigate();
 
-  const { user } = useContext(AppContext);
+  const initPay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'Credits Payment',
+      description: 'Credits Payment',
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        try {
+          const { data } = await axios.post(`${backendUrl}/api/user/verify-razor`, response, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (data.success) {
+            loadCreditsData();
+            navigate('/');
+            toast.success('Credits added successfully!');
+          } else {
+            toast.error('Payment verification failed!');
+          }
+        } catch (error) {
+          toast.error('Error during payment verification.');
+        }
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  const paymentRazorpay = async (planId) => {
+    try {
+      if (!user) {
+        setShowLogin(true);
+        return;
+      }
+
+      const { data } = await axios.post(`${backendUrl}/api/user/pay-razor`, { planId }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (data.success) {
+        initPay(data.order);
+      } else {
+        toast.error('Failed to initiate payment!');
+      }
+    } catch (error) {
+      toast.error('Error initiating payment.');
+    }
+  };
 
   return (
     <div className='min-h-[80vh] text-center pt-14 mb-10'>
@@ -52,6 +107,7 @@ const BuyCredit = () => {
               </span>
             </p>
             <motion.button
+              onClick={() => paymentRazorpay(item.id)}
               className='cursor-pointer w-full bg-gray-800 text-white mt-8 text-sm rounded-md py-2.5 min-w-52'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
