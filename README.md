@@ -24,7 +24,7 @@ Imagify is a SaaS platform for AI-powered image generation, built using modern w
 
 ### 1. Clone the repository
    ```sh
-   git clone https://github.com/yourusername/imagify.git
+   git clone https://github.com/mthirumalai2905/imagify.git
    ```
 
 ### 2. Navigate to the project directory
